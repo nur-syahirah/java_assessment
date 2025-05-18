@@ -5,11 +5,8 @@ import java.util.Date;
 abstract public class Person
 {
     private final String id;
-
     private final String name;
-
     private final String email;
-
     private final Date birthDate;
 
     protected Person( String id, String name, String email, Date birthDate )
@@ -20,29 +17,24 @@ abstract public class Person
         this.birthDate = birthDate;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public String getEmail()
-    {
+    public String getEmail() {
         return email;
     }
 
-    public Date getBirthDate()
-    {
-        return birthDate;
+    public Date getBirthDate() {
+        return new Date(birthDate.getTime());
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return id + '\'' + ", name='" + name + '\'' + ", email='" + email + '\'' + ", birthDate=" + birthDate;
     }
 }

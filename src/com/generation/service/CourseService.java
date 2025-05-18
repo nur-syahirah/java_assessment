@@ -15,7 +15,7 @@ public class CourseService
 
     private final Map<String, List<Student>> enrolledStudents = new HashMap<>();
 
-    public CourseService()
+    public CourseService()  //constructor
     {
         Module module = new Module( "INTRO-CS", "Introduction to Computer Science",
                                     "Introductory module for the generation technical programs" );
@@ -35,59 +35,51 @@ public class CourseService
         registerCourse( new Course( "INTRO-WEB-4", "Advanced HTML", 9, moduleWebFundamentals ) );
         registerCourse( new Course( "INTRO-WEB-5", "Advanced CSS", 9, moduleWebFundamentals ) );
         registerCourse( new Course( "INTRO-WEB-6", "Introduction to Bootstrap Framework", 9, moduleWebFundamentals ) );
-        registerCourse(
-            new Course( "INTRO-WEB-7", "Introduction to JavaScript for Web Development", 9, moduleWebFundamentals ) );
+        registerCourse( new Course( "INTRO-WEB-7", "Introduction to JavaScript for Web Development", 9, moduleWebFundamentals ) );
 
     }
-
-    public void registerCourse( Course course )
-    {
+    // Inserts a course into the courses map
+    public void registerCourse( Course course ) {
         courses.put( course.getCode(), course );
     }
 
-    public Course getCourse( String code )
-    {
-        if ( courses.containsKey( code ) )
-        {
-            return courses.get( code );
-        }
-        return null;
+    // Retrieves a course from the courses map
+    public Course getCourse( String code ) {
+        if ( courses.containsKey( code ) ) {
+            return courses.get(code);
+        } return null;
     }
-
-    public void enrollStudent( String courseId, Student student )
-    {
-        if ( !enrolledStudents.containsKey( courseId ) )
-        {
+    // Adds the student to the list of enrolled students for that course.
+    public void enrollStudent( String courseId, Student student ) {
+        if ( !enrolledStudents.containsKey( courseId ) ) {
             enrolledStudents.put( courseId, new ArrayList<>() );
-        }
-        enrolledStudents.get( courseId ).add( student );
+        } enrolledStudents.get( courseId ).add( student );
     }
 
-    public void showEnrolledStudents( String courseId )
-    {
-        if ( enrolledStudents.containsKey( courseId ) )
-        {
-            List<Student> students = enrolledStudents.get( courseId );
-            for ( Student student : students )
-            {
-                System.out.println( student );
-            }
+    public void showEnrolledStudents(String courseId) {
+        List<Student> students = enrolledStudents.getOrDefault(courseId, new ArrayList<>());
+
+        if (students.isEmpty()) {
+            System.out.println("No student has enrolled in this course");
+        } else {
+            students.forEach(System.out::println);
         }
     }
 
-
-    public void showSummary()
-    {
+    // Displays a comprehensive summary of available courses and the corresponding enrolled students.
+    public void showSummary() {
         System.out.println( "Available Courses:" );
-        for ( String key : courses.keySet() )
-        {
+        for ( String key : courses.keySet() ) {
+
             Course course = courses.get( key );
             System.out.println( course );
         }
-        System.out.println( "Enrolled Students" );
+
+        System.out.println( "\nEnrolled Students" );
         for ( String key : enrolledStudents.keySet() )
         {
             List<Student> students = enrolledStudents.get( key );
+            System.out.println( "|-------------------------------------|" );
             System.out.println( "Students on Course " + key + ": " );
             for ( Student student : students )
             {
