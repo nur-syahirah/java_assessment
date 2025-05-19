@@ -56,15 +56,20 @@ public class Student
         courseGrades.put(courseCode, grade);
     }
 
-    public Double getGrade(String courseCode) {
-        return courseGrades.get(courseCode);
+    public Map <String, Double> getCourseGrades() {
+        return courseGrades;
     }
 
-    // CHALLENGE IMPLEMENTATION: Read README.md to find instructions on how to solve. 
-    public List<Course> findPassedCourses( Course course ) {
-        //TODO implement this method
-        return null;
+    public List<Course> findPassedCourses( ) {
+    List<Course> passedCourses = new ArrayList<>();
+    for (Course course: courses){
+        Double grade = courseGrades.get(course.getCode());
+        if (grade != null && grade >= 50){
+            passedCourses.add(course);
+        }
     }
+    return passedCourses;
+}
 
     public boolean isAttendingCourse( String courseCode ) {
         for (Course c : courses) {
@@ -76,19 +81,15 @@ public class Student
 
     @Override
     public double getAverage() {
-
-        // TODO for calculating averages
-        // Option 1: Binary approach
-        // If student takes a course AND passes the course = 9 credits
-        // If student takes a course and fails the course = 0 credit
-        // Avg = total credits / number of courses taken
-
-        // Option 2: Scoring system
-        // If student takes a course
-        // Student can be graded between 0 - 9 (where 0 = min, 9 = max score)
-        // Avg = total credits / number of courses taken
-
-        return average;
+        if (courseGrades.isEmpty()){
+            System.out.println("There are not grades recorded.");
+            return -1; // To indicate that no grades are avail.
+        }
+        double total = 0;
+        for (Double grade : courseGrades.values()){
+            total += grade;
+        }
+        return average = total / courseGrades.size();
     }
 
     @Override

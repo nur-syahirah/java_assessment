@@ -8,9 +8,13 @@ import com.generation.utils.PrinterHelper;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
+
+    public Main() {
+    }
 
     public static void main(String[] args)
             throws ParseException {
@@ -40,9 +44,12 @@ public class Main {
                 case 6:
                     showCoursesSummary(courseService, scanner);
                     break;
+                case 7:
+                    showStudentAverage(studentService, scanner);
+                    break;
             }
         }
-        while (option != 7);
+        while (option != 8);
     }
 
     private static void enrollStudentToCourse(StudentService studentService, CourseService courseService,
@@ -54,7 +61,6 @@ public class Main {
             System.out.println("Invalid Student ID");
             return;
         }
-        //System.out.println( student );
         System.out.println("Hello, " + student.getName());
         System.out.println("Please insert the course ID you want to sign up:");
         String courseId = scanner.next();
@@ -67,9 +73,10 @@ public class Main {
 
         boolean status = studentService.enrollToCourse(studentId, course);
         if (status) {
-            System.out.println("Student with ID: " + studentId + " enrolled successfully to " + courseId);
+            System.out.println("You have successfully enrolled to " + courseId + "-"+ course.getName());
+
         } else
-            System.out.println("Unable to enrol Student with ID: " + studentId + ". You have already enrolled.");
+            System.out.println(student.getName()+ ", you have already enrolled to " + courseId + "-"+ course.getName());
 
     }
 
@@ -87,7 +94,7 @@ public class Main {
         String studentId = scanner.next();
         Student student = studentService.findStudent(studentId);
         if (student == null) {
-            System.out.println("Student with ID" + studentId + "not found.");
+            System.out.println("Student with ID" + studentId + " not found.");
             return;
         }
         // List courses enrolled by the student.
@@ -97,9 +104,9 @@ public class Main {
             return;
         }
         // Else list down the courses the student is attending
-        System.out.println("Courses the student is attending: ");
+        System.out.println("Courses that Student "+studentId+ " is attending: ");
         for (Course course : enrolledCourses) {
-            System.out.println(" " + course.getCode() + "-" + course.getName());
+            System.out.println(" " + course.getCode() + " : " + course.getName());
         }
 
         // Prompt for the course to grade
@@ -110,7 +117,6 @@ public class Main {
             return;
         }
 
-        // Prompt for the grade. Needs to input integer to calculate average later
         double grade;
         while (true) {
             System.out.println("Enter grade for course " + courseCode + "(0-100): ");
@@ -118,7 +124,7 @@ public class Main {
             if (grade >= 0 && grade <= 100) {
                 break;
             } else {
-                System.out.println("Invalid input. Grade must be between 0 and 100. Please re-input.");
+                System.out.println("Invalid input. Grade must be between 0 and 100. Please re-enter.");
             }
         }
 
@@ -128,45 +134,44 @@ public class Main {
 
         // Categorise the grade according credit 9-0.
         int earnedCredits = 0;
-        if (grade >= 90 && grade <= 100) {
+        if (grade >= 90) {
             earnedCredits = 9;
-        } else if (grade >= 80 && grade < 90) {
+        } else if (grade >= 80) {
             earnedCredits = 8;
-        } else if (grade >= 70 && grade < 80) {
+        } else if (grade >= 70) {
             earnedCredits = 7;
-        } else if (grade >= 60 && grade < 70) {
+        } else if (grade >= 60) {
             earnedCredits = 6;
-        } else if (grade >= 50 && grade < 60) {
+        } else if (grade >= 50) {
             earnedCredits = 5;
-        } else if (grade >= 40 && grade < 50) {
+        } else if (grade >= 40) {
             earnedCredits = 4;
-        } else if (grade >= 30 && grade < 40) {
+        } else if (grade >= 30) {
             earnedCredits = 3;
-        } else if (grade >= 20 && grade < 30) {
+        } else if (grade >= 20) {
             earnedCredits = 2;
-        } else if (grade >= 10 && grade < 20) {
+        } else if (grade >= 10) {
             earnedCredits = 1;
         } else { // numericGrade below 20
             earnedCredits = 0;
+        }
 
-
-            // Print the grading details: student id, name, course id, course name, and letter grade.
-            Course gradedCourse = null;
-            for (Course c : enrolledCourses) {
-                if (c.getCode().equals(courseCode)) {
-                    gradedCourse = c;
-                    break;
-                }
+        // Print the grading details: student id, name, course id, course name, and letter grade.
+        Course gradedCourse = null;
+        for (Course c : enrolledCourses) {
+            if (c.getCode().equals(courseCode)) {
+                gradedCourse = c;
+                break;
             }
+        }
 
-            if (gradedCourse != null) {
-                System.out.println("\nGrade Recorded:");
-                System.out.println("Student ID   : " + student.getId());
-                System.out.println("Student Name : " + student.getName());
-                System.out.println("Course ID    : " + gradedCourse.getCode());
-                System.out.println("Course Name  : " + gradedCourse.getName());
-                System.out.println("Grade(Credit): " + grade + " (" + earnedCredits + ")");
-            }
+        if (gradedCourse != null) {
+            System.out.println("\nGrade Recorded:");
+            System.out.println("Student ID   : " + student.getId());
+            System.out.println("Student Name : " + student.getName());
+            System.out.println("Course ID    : " + gradedCourse.getCode());
+            System.out.println("Course Name  : " + gradedCourse.getName());
+            System.out.println("Grade(Credit): " + grade + " (" + earnedCredits + ")");
         }
     }
 
@@ -186,5 +191,29 @@ public class Main {
         throws ParseException {
             Student student = PrinterHelper.createStudentMenu(scanner);
             studentService.subscribeStudent(student);
+        }
+
+        private static void showStudentAverage (StudentService studentService, Scanner scanner){
+            System.out.println("Enter student ID:");
+            String studentId = scanner.next();
+            Student student = studentService.findStudent(studentId);
+
+            if (student == null){
+                System.out.println("Student not found");
+                return;
+            }
+            //Display the subjects and grades first
+            System.out.println(student.getName()+"'s Courses and Grades =>7");
+            Map<String, Double> courseGrades = student.getCourseGrades();
+
+            if (courseGrades.isEmpty()){
+                return;
+            }
+            for (Map.Entry<String,Double> entry:courseGrades.entrySet()){
+                System.out.printf(" - %s: %.2f%n",entry.getKey(),entry.getValue());
+            }
+            // Display average
+            double average = student.getAverage();
+            System.out.printf("%s's average grades: %.1f%n", student.getName(), student.getAverage());
         }
     }

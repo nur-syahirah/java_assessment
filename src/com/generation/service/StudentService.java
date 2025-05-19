@@ -45,7 +45,7 @@ public class StudentService
 
     public boolean enrollToCourse( String studentId, Course course ) {
         boolean status = false;
-        if (students.containsKey( studentId ) ) {
+        if (isSubscribed( studentId ) ) {
             status = students.get(studentId).enrollToCourse(course);
         }
         return status;
